@@ -1,0 +1,66 @@
+LinkedList题目：
+
+83. Remove Duplicates from Sorted List
+Given a sorted linked list, delete all duplicates such that each element appear only once.
+
+For example,
+Given 1->1->2, return 1->2.
+Given 1->1->2->3->3, return 1->2->3.
+
+Answer：
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode *deleteDuplicates(ListNode *head) {
+        ListNode* cur = head;
+        while (cur) {
+            while (cur->next && cur->val == cur->next->val)
+                cur->next = cur->next->next;
+            cur = cur->next;
+        }
+        return head;
+    }
+};
+
+在链表中删除元素只需要一个指针就好，注意头指针和while循环的条件
+
+ 
+141. Linked List Cycle
+判断LinkedList是否是循环List
+
+两个指针 一个fast 一个slow fast每次循环走两步，slow每次走一步
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+       if(head==NULL||head->next==NULL)
+           return false;
+        ListNode* fast = head;
+        ListNode* slow = head;
+        
+        while(fast&&fast->next)
+        {
+            fast = fast->next->next;
+            slow = slow->next;
+            if(fast==slow)
+                return true;
+        }
+            return false;
+    }
+    
+};
