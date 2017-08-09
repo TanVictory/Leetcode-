@@ -1,0 +1,188 @@
+160. Intersection of Two Linked Lists
+
+Write a program to find the node at which the intersection of two singly linked lists begins.
+
+
+For example, the following two linked lists:
+
+A:          a1 → a2
+                   ↘
+                     c1 → c2 → c3
+                   ↗            
+B:     b1 → b2 → b3
+begin to intersect at node c1.
+
+两个指针一个指向pA一个指向pB，当pA或pB==null，把指针指向otherlist的head O（n），O（1）
+
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+    ListNode *cur1 = headA, *cur2 = headB;
+    while(cur1 != cur2){
+        cur1 = cur1?cur1->next:headB;
+        cur2 = cur2?cur2->next:headA;
+    }
+    return cur1;
+}
+
+
+203. Remove Linked List Elements
+Remove all elements from a linked list of integers that have value val.
+
+Example
+Given: 1 --> 2 --> 6 --> 3 --> 4 --> 5 --> 6, val = 6
+Return: 1 --> 2 --> 3 --> 4 --> 5
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+      
+        if(head==NULL)
+            return NULL;
+        
+        ListNode* Before = head;
+        ListNode* cur = head->next;
+        while(cur)
+        {           
+            if(cur->val==val)
+            {
+                Before->next = cur->next; 
+                cur = cur->next;
+            }
+            else
+            {
+                Before = cur;
+                cur = cur->next;
+            }       
+        }     
+            if(head->val==val) head=head->next;
+            return head;
+    }
+};
+
+没什么好说的 要记住头结点也可能==val这种情况 - -~!(貌似Leetcode上的链表都是不带头结点的)
+
+206. Reverse Linked List
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if(head==NULL)
+            return NULL;
+        
+        ListNode* pre = NULL;
+        while(head)
+        {
+            ListNode* temp = head->next;
+            head->next = pre;
+            pre=head;
+            head = temp;
+        }
+        return pre;
+    }
+};
+
+加一个辅助的temp来辅助reverse （记录head的下一位置，这样就可以让head顺序翻转）
+
+ bool isPalindrome(ListNode* head) {
+        if(!head)
+            return true;
+        
+        ListNode* BroList = reverseList(head);
+        
+        while(BroList&&head)
+        {
+            if(BroList->val!=head->val)
+                return false;
+            else
+            {
+                BroList = BroList->next;
+                head = head->next;
+            }           
+        }
+        return true;
+    
+    
+  234. Palindrome Linked List
+  判断是否为回文List
+  
+  一开始想用翻转链表然后和原链表对比，但翻转之后原链表的next都已经变了（这里和内置类型不太一样）所以不行Pass！
+  
+  （1）用迭代的方式
+  用两个指针 一个fast，一个slow，一个temp保存开始的head，当fast走到底的时候，slow刚好走到中点，这个时候，翻转slow->next,再让slow = slow->next,然后
+  让head和slow分别比对 相同则为true 不同则false
+  
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(head==NULL||head->next==NULL)
+            return true;
+       
+        
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while(fast->next&&fast->next->next)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        
+        slow = reverseList(slow->next);
+        while(slow)
+        {
+            if(head->val!=slow->val)
+                return false;
+           
+                slow = slow->next;
+                head = head->next;
+            
+            
+        }
+        return true;
+        
+    }
+    ListNode* reverseList(ListNode* head) {
+        ListNode* pre=NULL;
+        ListNode* next=NULL;
+        while(head!=NULL){
+            next=head->next;
+            head->next=pre;
+            pre=head;
+            head=next;
+        }
+        return pre;
+    }
+};
+
+(2)还可以用递归的方法
+
+class Solution {
+public:
+    ListNode* temp;
+    bool isPalindrome(ListNode* head) {
+        temp = head;
+        return check(head);
+    }
+    
+    bool check(ListNode* p) {
+        if (NULL == p) return true;
+        bool isPal = check(p->next) & (temp->val == p->val);
+        temp = temp->next;
+        return isPal;
+    }
+};
+
