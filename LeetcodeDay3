@@ -1,0 +1,82 @@
+
+155. Min Stack
+
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+
+class MinStack {
+public:
+    
+    stack<int> a;
+    stack<int> b;
+    int Min;
+    /** initialize your data structure here. */
+    MinStack() {
+        Min = INT_MAX;
+    }
+    
+    void push(int x) {
+        a.push(x);
+        if(b.empty()||x<=b.top())
+            b.push(x);
+    }
+    
+    void pop() {
+       
+        if(a.top()==getMin())
+            b.pop(); 
+            a.pop();
+        
+    }
+    
+    int top() {
+        return a.top();
+    }
+    
+    int getMin() {
+       return b.top();
+    }
+};
+
+225. Implement Stack using Queues
+用队列实现栈 主要是在push操作上做文章 push的时候先把位于front的元素push到队列的尾端 然后再pop front，循环size（）-1 次
+
+class MyStack {
+public:
+    queue<int> que;
+    /** Initialize your data structure here. */
+    MyStack() {
+        
+    }
+    
+    /** Push element x onto stack. */
+    void push(int x) {
+        que.push(x);
+        for(int i=0;i<que.size()-1;++i)
+        {
+            que.push(que.front());
+            que.pop();
+        }
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    int pop() {
+        int temp = que.front();
+        que.pop();
+        return temp;
+    }
+    
+    /** Get the top element. */
+    int top() {
+        return que.front();
+    }
+    
+    /** Returns whether the stack is empty. */
+    bool empty() {
+        return que.empty();
+    }
+};
