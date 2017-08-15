@@ -1,0 +1,256 @@
+104. Maximum Depth of Binary Tree！！！！！！！！！！！！！！！！！！！！！！！
+
+DFS:
+
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        if(!root)
+            return 0;
+        
+        
+       return 1+max(maxDepth(root->left),maxDepth(root->right));
+    }
+};
+
+BFS:
+
+int maxDepth(TreeNode *root)
+{
+    if(root == NULL)
+        return 0;
+    
+    int res = 0;
+    queue<TreeNode *> q;
+    q.push(root);
+    while(!q.empty())
+    {
+        ++ res;
+        for(int i = 0, n = q.size(); i < n; ++ i)
+        {
+            TreeNode *p = q.front();
+            q.pop();
+            
+            if(p -> left != NULL)
+                q.push(p -> left);
+            if(p -> right != NULL)
+                q.push(p -> right);
+        }
+    }
+    
+    return res;
+}
+
+
+226. Invert Binary Tree！！！！！！！！！！！！！！！！！！！！！！
+
+class Solution {
+public:
+    TreeNode* invertTree(TreeNode* root) {
+        if(!root)
+            return NULL;
+        
+        TreeNode* temp = root->left;
+        root->left = root->right;
+        root->right = temp;
+        invertTree(root->left);
+        invertTree(root->right);
+        
+        return root;
+    }
+};
+
+653. Two Sum IV - Input is a BST！！！！！！！！！！！！！！！！！！！！！！！！！
+
+Given a Binary Search Tree and a target number, return true if there exist two elements in the BST such that their sum is equal to the given target.
+
+Example 1:
+Input: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 9
+
+Output: True
+Example 2:
+Input: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 28
+
+Output: False
+
+
+第一种解法 用unorder_set ，count函数是用Hashtable来实现的，若在set中找到key 返回1 else 返回0
+
+class Solution {
+    
+public:
+    bool findTarget(TreeNode* root, int k) {
+        
+        if(!root)return false;
+        
+        unordered_set<int> set;
+        
+        return dfs(root,set,k);
+         
+    }
+    
+    bool dfs(TreeNode* root,unordered_set<int>& set,int k)
+    {
+        if(!root) return false;
+        if(set.count(k-root->val))return true;
+        set.insert(root->val);
+        return dfs(root->left,set,k)||dfs(root->right,set,k);
+    }
+    
+};
+
+第二种解法 用inorder排好序 再用头尾法找sum是否==k
+  bool findTarget(TreeNode* root, int k) {
+        vector<int> nums;
+        inorder(root, nums);
+        for(int i = 0, j = nums.size()-1; i<j;){
+            if(nums[i] + nums[j] == k)return true;
+            (nums[i] + nums[j] < k)? i++ : j--;
+        }
+        return false;
+    }
+    
+    void inorder(TreeNode* root, vector<int>& nums){
+        if(root == NULL)return;
+        inorder(root->left, nums);
+        nums.push_back(root->val);
+        inorder(root->right, nums);
+    }
+
+ 
+
+538. Convert BST to Greater Tree！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
+Given a Binary Search Tree (BST), convert it to a Greater Tree such that every key of the original BST is changed to the original key plus sum of all keys greater than the original key in BST.
+
+Example:
+
+Input: The root of a Binary Search Tree like this:
+              5
+            /   \
+           2     13
+
+Output: The root of a Greater Tree like this:
+             18
+            /   \
+          20     13
+逆向中序遍历
+
+class Solution {
+public:
+    TreeNode* convertBST(TreeNode* root) {
+        if(!root) return NULL;
+        int sum = 0;
+        Reverseinorder(root,sum);
+        return root;
+    }
+    
+    void Reverseinorder(TreeNode* root,int& sum)
+    {
+        if(!root) return;
+        if(root->right)
+            Reverseinorder(root->right,sum);
+            sum+=root->val;
+            root->val = sum;
+        if(root->left)
+        Reverseinorder(root->left,sum);
+    }
+};
+
+ 
+530. Minimum Absolute Difference in BST！！！！！！！！！！！！！！！！！！！！！！！！！
+
+Given a binary search tree with non-negative values, find the minimum absolute difference between values of any two nodes.
+
+Example:
+
+Input:
+
+   1
+    \
+     3
+    /
+   2
+
+Output:
+1
+
+Explanation:
+The minimum absolute difference is 1, which is the difference between 2 and 1 (or between 2 and 3).
+Note: There are at least two nodes in this BST.
+
+class Solution {
+public:
+    vector<int> vec;
+    
+    int getMinimumDifference(TreeNode* root) {
+       
+        
+        inorder(root);
+        int min = INT_MAX;
+        int size = vec.size();
+        for(int i=1;i<size;++i)
+        {
+            if(abs(vec[i]-vec[i-1])<min)
+               min = abs(vec[i]-vec[i-1]);
+        }
+        return min;
+    }
+    
+    void inorder(TreeNode* root)
+    {
+        if(!root)return;
+        
+        inorder(root->left);
+        vec.push_back(root->val);
+        inorder(root->right);
+    }
+};
+
+ 
+
+404. Sum of Left Leaves!!!!!!!!!!!!!!!!!!!!!!!!!!
+Find the sum of all left leaves in a given binary tree.
+
+Example:
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+
+There are two left leaves in the binary tree, with values 9 and 15 respectively. Return 24.
+
+剪枝法 关键状态为(root->left&&!root->left->left&&!root->left->right) return root->left->val + sumOfLeftLeaves(root->right)
+
+class Solution {
+public:
+    
+    
+    int sumOfLeftLeaves(TreeNode* root) {
+        if(!root) return 0;
+        
+        if(root->left&&!root->left->left&&!root->left->right) return root->left->val + sumOfLeftLeaves(root->right);
+        
+        return sumOfLeftLeaves(root->left)+sumOfLeftLeaves(root->right);
+    }
+    
+   
+};
+
+
